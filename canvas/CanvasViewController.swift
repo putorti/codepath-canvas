@@ -104,11 +104,16 @@ class CanvasViewController: UIViewController {
             newlyCreatedFace.center.y += trayView.frame.origin.y
             newlyCreatedFace.userInteractionEnabled = true
             newlyCreatedFaceOriginalCenter = newlyCreatedFace.center
+            
             var panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "didPanNewFace:")
             var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didTapNewFace:")
+            var pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: "didPinchNewFace:")
+            
             tapGestureRecognizer.numberOfTapsRequired = 2;
+            
             newlyCreatedFace.addGestureRecognizer(panGestureRecognizer)
             newlyCreatedFace.addGestureRecognizer(tapGestureRecognizer)
+            newlyCreatedFace.addGestureRecognizer(pinchGestureRecognizer)
 
         } else if sender.state == UIGestureRecognizerState.Changed {
             
