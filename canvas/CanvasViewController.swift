@@ -10,9 +10,18 @@ import UIKit
 
 class CanvasViewController: UIViewController {
 
+    @IBOutlet weak var trayView: UIView!
+    var trayOriginalCenter: CGPoint!
+    var trayDownOffset: CGFloat!
+    var trayUp: CGPoint!
+    var trayDown: CGPoint!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        trayDownOffset = 160
+        trayUp = trayView.center
+        trayDown = CGPoint(x: trayView.center.x ,y: trayView.center.y + trayDownOffset)
+        
         // Do any additional setup after loading the view.
     }
 
@@ -21,6 +30,30 @@ class CanvasViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func didPanTray(sender: AnyObject) {
+        let translation = sender.translationInView(view)
+        
+        if sender.state == UIGestureRecognizerState.Began {
+            trayOriginalCenter = trayView.center
+        } else if sender.state == UIGestureRecognizerState.Changed {
+            trayView.center = CGPoint(x: trayOriginalCenter.x, y: trayOriginalCenter.y + translation.y)
+        } else if sender.state == UIGestureRecognizerState.Ended {
+            
+            var velocity = sender.velocityInView(view)
+            
+            if velocity.y > 0 {
+                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                    self.trayView.center = self.trayDown
+                })
+            } else {
+                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                    self.trayView.center = self.trayUp
+                })
+            }
+        }
+        
+       
+    }
 
     /*
     // MARK: - Navigation
