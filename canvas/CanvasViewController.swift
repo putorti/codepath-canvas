@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CanvasViewController: UIViewController {
+class CanvasViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet var canvasView: UIView!
     @IBOutlet weak var trayView: UIView!
@@ -23,6 +23,7 @@ class CanvasViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // set tray z-index
         trayDownOffset = 160
         trayUp = trayView.center
         trayDown = CGPoint(x: trayView.center.x ,y: trayView.center.y + trayDownOffset)
@@ -33,6 +34,10 @@ class CanvasViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer!, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer!) -> Bool {
+        return true
     }
     
     @IBAction func didPanTray(sender: AnyObject) {
@@ -68,6 +73,13 @@ class CanvasViewController: UIViewController {
         let imageView = sender.view as! UIImageView
         imageView.transform = CGAffineTransformScale(imageView.transform, scale, scale)
         sender.scale = 1
+    }
+    
+    func didRotateNewFace(sender: UIRotationGestureRecognizer) {
+        let rotation = sender.rotation
+        let imageView = sender.view as! UIImageView
+        imageView.transform = CGAffineTransformRotate(imageView.transform, rotation)
+        sender.rotation = 0
     }
     
     func didPanNewFace(sender: UIPanGestureRecognizer) {
@@ -108,12 +120,16 @@ class CanvasViewController: UIViewController {
             var panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "didPanNewFace:")
             var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didTapNewFace:")
             var pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: "didPinchNewFace:")
+            var rotationGestureRecognizer = UIRotationGestureRecognizer(target: self, action: "didRotateNewFace:")
+            
             
             tapGestureRecognizer.numberOfTapsRequired = 2;
+            pinchGestureRecognizer.delegate = self;
             
             newlyCreatedFace.addGestureRecognizer(panGestureRecognizer)
             newlyCreatedFace.addGestureRecognizer(tapGestureRecognizer)
             newlyCreatedFace.addGestureRecognizer(pinchGestureRecognizer)
+            newlyCreatedFace.addGestureRecognizer(rotationGestureRecognizer)
 
         } else if sender.state == UIGestureRecognizerState.Changed {
             
