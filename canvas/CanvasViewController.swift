@@ -70,6 +70,22 @@ class CanvasViewController: UIViewController {
         sender.scale = 1
     }
     
+    func didPanNewFace(sender: UIPanGestureRecognizer) {
+        
+        var point = sender.locationInView(view)
+        var velocity = sender.velocityInView(view)
+        var translation = sender.translationInView(view)
+        
+        if sender.state == UIGestureRecognizerState.Began {
+           newlyCreatedFace = sender.view as! UIImageView
+            newlyCreatedFaceOriginalCenter = newlyCreatedFace.center
+        } else if sender.state == UIGestureRecognizerState.Changed {
+            newlyCreatedFace.center = CGPoint(x: newlyCreatedFaceOriginalCenter.x + translation.x, y: newlyCreatedFaceOriginalCenter.y + translation.y)
+        } else if sender.state == UIGestureRecognizerState.Ended {
+            
+        }
+    }
+    
     @IBAction func didPanFace(sender: AnyObject) {
         
         var translation = sender.translationInView(view)
@@ -82,8 +98,10 @@ class CanvasViewController: UIViewController {
             view.addSubview(newlyCreatedFace)
             newlyCreatedFace.center = imageView.center
             newlyCreatedFace.center.y += trayView.frame.origin.y
+            newlyCreatedFace.userInteractionEnabled = true
             newlyCreatedFaceOriginalCenter = newlyCreatedFace.center
-            // add pinch recognizer to new face somehow
+            var panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "didPanNewFace:")
+            newlyCreatedFace.addGestureRecognizer(panGestureRecognizer)
 
         } else if sender.state == UIGestureRecognizerState.Changed {
             
