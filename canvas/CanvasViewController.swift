@@ -10,11 +10,16 @@ import UIKit
 
 class CanvasViewController: UIViewController {
 
+    @IBOutlet var canvasView: UIView!
     @IBOutlet weak var trayView: UIView!
+    @IBOutlet weak var trayArrow: UIImageView!
+    
     var trayOriginalCenter: CGPoint!
     var trayDownOffset: CGFloat!
     var trayUp: CGPoint!
     var trayDown: CGPoint!
+    var newlyCreatedFace: UIImageView!
+    var newlyCreatedFaceOriginalCenter: CGPoint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,22 +42,59 @@ class CanvasViewController: UIViewController {
             trayOriginalCenter = trayView.center
         } else if sender.state == UIGestureRecognizerState.Changed {
             trayView.center = CGPoint(x: trayOriginalCenter.x, y: trayOriginalCenter.y + translation.y)
+            
         } else if sender.state == UIGestureRecognizerState.Ended {
             
-            var velocity = sender.velocityInView(view)
+            let velocity = sender.velocityInView(view)
             
             if velocity.y > 0 {
                 UIView.animateWithDuration(0.3, animations: { () -> Void in
                     self.trayView.center = self.trayDown
                 })
+                // rotate tray arrow
             } else {
                 UIView.animateWithDuration(0.3, animations: { () -> Void in
                     self.trayView.center = self.trayUp
                 })
+                // rotate tray arrow
             }
         }
         
-       
+    }
+    
+    func didPinchNewFace(sender: UIPinchGestureRecognizer) {
+        // get the scale value from the pinch gesture recognizer
+        let scale = sender.scale
+        let imageView = sender.view as! UIImageView
+        imageView.transform = CGAffineTransformScale(imageView.transform, scale, scale)
+        sender.scale = 1
+    }
+    
+    @IBAction func didPanFace(sender: AnyObject) {
+        
+        var translation = sender.translationInView(view)
+        var imageView = sender.view as! UIImageView
+        
+        if sender.state == UIGestureRecognizerState.Began {
+            
+            print("didPanFace: Begin")
+            newlyCreatedFace = UIImageView(image: imageView.image)
+            view.addSubview(newlyCreatedFace)
+            newlyCreatedFace.center = imageView.center
+            newlyCreatedFace.center.y += trayView.frame.origin.y
+            newlyCreatedFaceOriginalCenter = newlyCreatedFace.center
+            // add pinch recognizer to new face somehow
+
+        } else if sender.state == UIGestureRecognizerState.Changed {
+            
+            print("didPanFace: Changed to", translation)
+            newlyCreatedFace.center = CGPoint(x: newlyCreatedFaceOriginalCenter.x + translation.x, y: newlyCreatedFaceOriginalCenter.y + translation.y)
+        
+        } else if sender.state == UIGestureRecognizerState.Ended {
+            print("didPanFace: Ended")
+            
+        }
+  
     }
 
     /*
